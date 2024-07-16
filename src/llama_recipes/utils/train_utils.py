@@ -216,9 +216,10 @@ def train(model, train_dataloader,eval_dataloader, tokenizer, optimizer, lr_sche
 
         if not train_config.enable_fsdp or rank==0:
             memtrace.print_stats()
-
         # Update the learning rate as needed
         lr_scheduler.step()
+        if step%10==0:
+            model.save_pretrained(train_config.output_dir)        
         if train_config.run_validation:
             eval_ppl, eval_epoch_loss, temp_val_loss, temp_step_perplexity = evaluation(model, train_config, eval_dataloader, local_rank, tokenizer, wandb_run)
             if train_config.save_metrics:
